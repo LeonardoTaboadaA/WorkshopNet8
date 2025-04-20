@@ -1,7 +1,10 @@
 ﻿using Jazani.Application.Dtos.Libros;
 using Jazani.Application.Services;
-using Jazani.Application.Services.Implementations;
 using Microsoft.AspNetCore.Mvc;
+using Jazani.Shared.Dtos;
+using Microsoft.EntityFrameworkCore;
+using Jazani.Api.Extensions;
+using Jazani.Shared.Extensions;
 
 namespace Jazani.Api.Controllers
 {
@@ -17,11 +20,17 @@ namespace Jazani.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginacionDTO paginacionDTO)
         {
-            var libros = await _libroService.FindAllAsync();
+            var queryable = _libroService.GetLibrosQueryable();
+            await HttpContext.InsertarParametrosPaginacionEnCabecera(queryable);
 
-            return Ok(libros);
+            var libros = await queryable
+            .Paginar(paginacionDTO)
+            .ToListAsync();
+
+            var librosMapeados = _libroService.MapearLibros(libros);
+            return Ok(librosMapeados);
         }
 
         [HttpGet("{id}")]

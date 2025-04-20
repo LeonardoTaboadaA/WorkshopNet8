@@ -104,4 +104,26 @@ public class CrudRepository<TEntity, TId> : ICrudRepository<TEntity, TId>
 
         return await query.ToListAsync();
     }
+
+    public IQueryable<TEntity> GetQueryable(
+        Expression<Func<TEntity, bool>> predicate = null,
+        List<Expression<Func<TEntity, object>>> includes = null,
+        bool disableTracking = true
+    )
+    {
+        IQueryable<TEntity> query = Context.Set<TEntity>();
+
+        if (disableTracking)
+            query = query.AsNoTracking();
+
+        if (includes != null)
+            query = includes.Aggregate(query, (current, include)
+                => current.Include(include));
+
+        if (predicate != null)
+            query = query.Where(predicate);
+
+        return query;
+    }
+
 }

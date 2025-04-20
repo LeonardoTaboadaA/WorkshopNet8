@@ -2,12 +2,8 @@
 using Jazani.Application.Dtos.Libros;
 using Jazani.Domain.Models;
 using Jazani.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Jazani.Application.Services.Implementations
 {
@@ -24,7 +20,8 @@ namespace Jazani.Application.Services.Implementations
             _libroRepository = libroRepository;
             _mapper = mapper;
         }
-        public async Task<IReadOnlyList<LibroMediumDto>> FindAllAsync()
+
+        public IQueryable<Libro> GetLibrosQueryable()
         {
             Expression<Func<Libro, bool>> predicate = x => x.Estado == 1;
 
@@ -33,12 +30,12 @@ namespace Jazani.Application.Services.Implementations
                 x => x.Editorial
             };
 
-            var libros = await _libroRepository.FindAllAsync(
+            var queryable = _libroRepository.GetQueryable(
                 predicate: predicate,
                 includes: includes
             );
 
-            return _mapper.Map<IReadOnlyList<LibroMediumDto>>(libros);
+            return queryable;
         }
 
         public async Task<LibroDto> FindByIdAsync(int id)
@@ -129,5 +126,12 @@ namespace Jazani.Application.Services.Implementations
             libro.Estado = 0;
             await _libroRepository.SaveAsync(libro);
         }
+
+        public IReadOnlyList<LibroMediumDto> MapearLibros(IList<Libro> libros)
+        {
+            return _mapper.Map<IReadOnlyList<LibroMediumDto>>(libros);
+        }
+
+
     }
 }

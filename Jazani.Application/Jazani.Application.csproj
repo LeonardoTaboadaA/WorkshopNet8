@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Jazani.Domain\Jazani.Domain.csproj" />
+      <ProjectReference Include="..\Jazani.Shared\Jazani.Shared.csproj" />
     </ItemGroup>
 
 </Project>

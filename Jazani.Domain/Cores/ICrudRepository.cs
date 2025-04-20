@@ -24,4 +24,11 @@ public interface ICrudRepository<TEntity,  TId>
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         bool disableTracking = true
         );
+
+    IQueryable<TEntity> GetQueryable(
+        Expression<Func<TEntity, bool>> predicate = null,
+        List<Expression<Func<TEntity, object>>> includes = null,
+        bool disableTracking = true
+        );
+
 }
